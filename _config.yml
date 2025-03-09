@@ -10,8 +10,8 @@ keywords:
   - atmospheric karma cleansing devices
 author: Wei Yan
 language: en
-url: http://kapmif.github.io
-
+url: https://kapmif.pages.dev
+root: /
 # ========= 技术参数 =========
 server_pro:
   port: 4010
@@ -30,7 +30,7 @@ quantum_server:
 # ========= 部署配置 =========
 deploy:
   type: git
-  repository: git@github.com:kapmif/kapmif.github.io.git
+  repo: git@github.com:kapmif/kapmif.github.io.git
   branch: main
   temporal_protection: true  # 启用时间分支保护
   port: 4010                 # 合并到统一部署配置
