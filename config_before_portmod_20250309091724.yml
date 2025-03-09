@@ -1,0 +1,5 @@
+﻿server_pro:
+  port: 4010
+  dynamic_port: true  # 启用智能端口跃迁
+  conflict_strategy: "+3"  # 冲突时端口偏移量
+  hologram_port: 4010  # 基准投影端口

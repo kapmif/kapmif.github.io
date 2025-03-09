@@ -1,0 +1,48 @@
+﻿# ========= 诗意核心 =========
+title: "Gaia's Lungs: Crystalline Breath Purifiers"  
+subtitle: "Where Molecular Alchemy Meets Atmospheric Poetry"
+description: "At the nexus of ionic innovation and ecological reverence..."
+keywords:
+  - urban air renaissance systems  
+  - biomimetic iodine filtration rituals
+  - quantum air sanctification process  
+  - sacred geometry air purifiers 
+  - atmospheric karma cleansing devices
+author: Wei Yan
+language: en
+url: http://kapmif.github.io
+
+# ========= 技术参数 =========
+server_pro:
+  port: 4010
+  dynamic_port: true
+  conflict_strategy: "+3"
+  hologram_port: 4010
+
+# ========= 量子服务器配置 =========
+quantum_server:
+  port: 4010
+  dynamic_port: true
+  conflict_strategy: 
+    algorithm: "fibonacci(+3)"  # 黄金分割偏移策略
+    hologram_anchor: 4010       # 全息基准点
+
+# ========= 部署配置 =========
+deploy:
+  type: git
+  repository: git@github.com:kapmif/kapmif.github.io.git
+  branch: main
+  temporal_protection: true  # 启用时间分支保护
+  port: 4010                 # 合并到统一部署配置
+  dynamic_port: true         # 智能端口跃迁
+  conflict_strategy: "+3"    # 端口冲突偏移策略
+
+# ========= 插件配置 =========
+plugins:
+  - hexo-filter-cachebuster
+
+# ========= 缓存破坏配置 =========
+cachebuster:
+  enable: true
+  static:
+    - css/style.css
