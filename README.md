@@ -1,63 +1,48 @@
-# Hi, I'm building SortLease 📦
+# Hi, I'm Wei — building AI parcel sorting infrastructure for last-mile logistics
 
-**The first pay-per-parcel sorting network for US Delivery Service Partners.**
+## 🔧 What I'm building
 
-5,000+ small DSPs are stuck sorting parcels manually. Large carriers (FedEx, UPS, Amazon) have automated their hubs. Small operators have no affordable option — until now.
+**[SortLease](https://www.sortlease.com)** — AI-powered parcel sorting equipment for Amazon DSPs and last-mile logistics operators.
 
-**The model:** We install AI sorting systems at zero capital cost. DSPs pay $0.10 per sorted parcel (vs $0.22–$0.30 manual). 83% gross margin. ~6-month payback per station.
+- FlowSort S15: **21,000 parcels/hour · 99.9% AI accuracy · 2 operators**
+- Pricing: **$0.10/parcel pay-per-parcel** · rental from $3,000/month
+- Target market: **5,000+ US Amazon Delivery Service Partners**
+- Seed round open: **$5M target · 83% gross margin**
 
----
+## 📦 Open source tools
 
-## 🔧 What's in this repo
+### [DSP Parcel Sorting ROI Calculator](https://kapmif.github.io)
 
-### [`dsp-roi-calculator`](https://github.com/kapmif/dsp-roi-calculator)
+**→ [Live calculator](https://kapmif.github.io) · [Source](https://github.com/kapmif/kapmif.github.io)**
 
-Open-source ROI calculator for last-mile delivery companies evaluating automated sorting.
+Free tool for Amazon DSPs and last-mile operators to calculate ROI of automated sorting vs manual. Enter your daily volume, staff count, wages — see exact monthly savings and payback period.
 
-- Pure Python, zero dependencies
-- Interactive CLI + standalone browser app
-- Real unit economics from actual deployments
-- Models small / medium / large DSP operations
+```js
+const DSPCalculator = require('./src/calculator.js');
 
-```bash
-git clone https://github.com/kapmif/dsp-roi-calculator
-python calculator.py
+const result = DSPCalculator.calculate({
+  dailyVolume:   5000,   // parcels/day
+  currentStaff:  6,      // sorting headcount
+  hourlyWage:    22,     // USD/hr
+  pricingModel:  'rental'
+});
+
+console.log(result.monthlySavings);  // $52,400
+console.log(result.annualSavings);   // $628,800
+console.log(result.paybackMonths);   // 7 months
 ```
 
----
+**Key benchmarks in the calculator:**
 
-## 🏗️ What we're building
-
-| | |
-|---|---|
-| 🤖 AI Engine | Computer vision parcel recognition + real-time routing |
-| 📡 IoT Layer | QR scanner → MQTT → AWS IoT Core |
-| 💳 Billing | $0.10/parcel metered → carrier payment API |
-| 📊 Analytics | Real-time throughput dashboard |
-| ⚡ Throughput | 3,500–21,000 parcels/hour per station |
-
-**Interesting problems:**
-- Sub-100ms routing decisions at scale
-- QR-based driver lane assignment in < 10 seconds
-- Metered billing integrated with FedEx / UPS / Amazon APIs
-- Multi-tenant analytics across shared hubs
+| Method | Cost/parcel | Throughput | Accuracy |
+|---|---|---|---|
+| Manual sorting | $0.22–$0.30 | 3,500/hr per operator | 94–96% |
+| FlowSort S15 AI | $0.07–$0.10 | 21,000/hr (2 operators) | 99.9% |
 
 ---
 
-## 💜 Seed Round Open
+## 📬 Contact
 
-- **$5M target** · 83% gross margin · 6-month payback/station
-- **50-station network** → $45M annual gross profit
-- → [Angel Investment Details](https://www.sortlease.com/angel-investment/)
-
-**Hiring:** CEO · Backend Engineer · IoT Engineer
-- → [Join the Mission](https://www.sortlease.com/join-the-mission/)
-
----
-
-## 📬 Get in touch
-
-- 🌐 [sortlease.com](https://www.sortlease.com)
-- 📧 [info@sortlease.com](mailto:info@sortlease.com)
-- 📞 [(406) 479-0215](tel:+14064790215)
-- 💬 [WhatsApp](https://wa.me/14064790215?text=Hi!%20Found%20your%20GitHub.)
+- **SortLease:** [sortlease.com](https://www.sortlease.com) · (406) 479-0215
+- **Invest:** [Seed round open](https://www.sortlease.com/angel-investment/)
+- **WhatsApp:** [+1 (406) 479-0215](https://wa.me/14064790215)
