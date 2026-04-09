@@ -1,276 +1,220 @@
 /**
- * DSP Parcel Sorting ROI Calculator
- * Open-source tool for Amazon DSPs and last-mile logistics operators
- *
- * Usage:
- *   const result = DSPCalculator.calculate({ dailyVolume: 5000, ... })
- *
+ * DSP ROI Calculator - Core Logic
+ * 
+ * Open-source ROI calculator for Amazon DSPs and last-mile parcel sorting automation
+ * 
+ * @author SortLease LLC
  * @license MIT
- * @see https://github.com/kapmif/dsp-roi-calculator
  */
 
-const DSPCalculator = (function () {
-
-  // ── Constants (FlowSort S15 verified specs) ──────────────────────────────
-  const CONSTANTS = {
-    AI_ERROR_RATE:       0.001,   // 0.1% mis-sort rate — FlowSort S15 verified
-    AI_OPERATORS:        2,       // operators required regardless of volume
-    SKILLED_WAGE:        28,      // USD/hr — AI system operator wage
-    SKILLED_BENEFITS:    0.28,    // 28% benefits overhead on operators
-    MANUAL_THROUGHPUT:   3200,    // parcels/hr per manual sorter (sustained avg)
-    PPP_RATES: {                   // pay-per-parcel volume tier rates
-      tier1: { maxDaily: 3000,   rate: 0.10 },
-      tier2: { maxDaily: 10000,  rate: 0.09 },
-      tier3: { maxDaily: 25000,  rate: 0.08 },
-      tier4: { maxDaily: Infinity, rate: 0.07 }
-    },
-    RENTAL_RATES: {                // monthly rental by volume
-      standard:    { maxDaily: 10000,    rate: 3000 },
-      high:        { maxDaily: 20000,    rate: 4500 },
-      enterprise:  { maxDaily: Infinity, rate: 7000 }
-    },
-    PURCHASE_DEFAULT:    100000,  // USD default purchase price
-    AMORTIZATION_MONTHS: 60      // 5-year amortization for purchase
-  };
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  function getPPPRate(dailyVolume) {
-    const tiers = Object.values(CONSTANTS.PPP_RATES);
-    for (const tier of tiers) {
-      if (dailyVolume <= tier.maxDaily) return tier.rate;
-    }
-    return CONSTANTS.PPP_RATES.tier4.rate;
+class DSPROICalculator {
+  constructor() {
+    this.defaultConfig = {
+      // Revenue parameters
+      baseRatePerParcel: 1.25,
+      fuelSurchargePercent: 8.5,
+      insuranceFeePerParcel: 0.15,
+      
+      // Cost parameters
+      driverHourlyRate: 22.0,
+      driverHoursPerDay: 10,
+      vehicleCostPerDay: 75.0,
+      insuranceCostPerDay: 25.0,
+      
+      // Sorting automation parameters
+      manualSortTimeSeconds: 45,
+      automatedSortTimeSeconds: 12,
+      sorterCostPerDay: 150.0,
+      sorterMaintenancePerDay: 15.0,
+      
+      // Volume parameters
+      workingDaysPerMonth: 26,
+      parcelsPerRoute: 180
+    };
+    
+    this.config = { ...this.defaultConfig };
   }
-
-  function getRentalRate(dailyVolume) {
-    const rates = Object.values(CONSTANTS.RENTAL_RATES);
-    for (const r of rates) {
-      if (dailyVolume <= r.maxDaily) return r.rate;
-    }
-    return CONSTANTS.RENTAL_RATES.enterprise.rate;
-  }
-
-  function getEquipmentCost(model, monthlyVolume, dailyVolume, purchasePrice) {
-    switch (model) {
-      case 'ppp':
-        return monthlyVolume * getPPPRate(dailyVolume);
-      case 'rental':
-        return getRentalRate(dailyVolume);
-      case 'purchase':
-        return (purchasePrice || CONSTANTS.PURCHASE_DEFAULT) / CONSTANTS.AMORTIZATION_MONTHS;
-      default:
-        throw new Error(`Unknown pricing model: "${model}". Use 'ppp', 'rental', or 'purchase'.`);
-    }
-  }
-
-  function requiredManualStaff(dailyVolume, shiftHours) {
-    const parcelsPerShift = dailyVolume;
-    const productivityPerShift = CONSTANTS.MANUAL_THROUGHPUT * shiftHours;
-    return Math.ceil(parcelsPerShift / productivityPerShift);
-  }
-
-  function getBreakEvenVolume(dailyVolume) {
-    // Monthly volume at which PPP cost = rental cost
-    // PPP: monthlyVol × rate = rental: $3,000
-    const rate = getPPPRate(dailyVolume);
-    const rental = getRentalRate(dailyVolume);
-    return Math.ceil(rental / rate);
-  }
-
-  // ── Validation ───────────────────────────────────────────────────────────
-
-  function validate(params) {
-    const required = ['dailyVolume', 'operatingDays', 'currentStaff', 'hourlyWage', 'shiftHours'];
-    for (const key of required) {
-      if (params[key] === undefined || params[key] === null) {
-        throw new Error(`Missing required parameter: "${key}"`);
-      }
-      if (typeof params[key] !== 'number' || params[key] < 0) {
-        throw new Error(`Parameter "${key}" must be a non-negative number`);
-      }
-    }
-    if (params.dailyVolume < 1) throw new Error('dailyVolume must be at least 1');
-    if (params.operatingDays < 1 || params.operatingDays > 31) throw new Error('operatingDays must be 1–31');
-    if (params.currentStaff < 0) throw new Error('currentStaff must be 0 or greater');
-    if (params.hourlyWage < 0) throw new Error('hourlyWage must be 0 or greater');
-    if (params.shiftHours < 1 || params.shiftHours > 24) throw new Error('shiftHours must be 1–24');
-  }
-
-  // ── Main calculate function ──────────────────────────────────────────────
 
   /**
-   * Calculate ROI for automated parcel sorting vs manual.
-   *
-   * @param {Object} params
-   * @param {number}  params.dailyVolume       - Average parcels sorted per day
-   * @param {number}  params.operatingDays     - Operating days per month (default: 26)
-   * @param {number}  params.currentStaff      - Current sorting headcount
-   * @param {number}  params.hourlyWage        - Average sorting wage USD/hr
-   * @param {number}  params.shiftHours        - Shift length in hours (default: 9)
-   * @param {number}  [params.benefitsRate]    - Benefits + overhead % (default: 0.28)
-   * @param {number}  [params.errorRate]       - Manual mis-sort rate (default: 0.05)
-   * @param {number}  [params.errorCostPerSort] - Cost per mis-sort USD (default: 4.50)
-   * @param {string}  [params.pricingModel]    - 'ppp' | 'rental' | 'purchase' (default: 'rental')
-   * @param {number}  [params.purchasePrice]   - Purchase price if model='purchase' (default: 100000)
-   * @returns {Object} Calculation result object
+   * Update configuration
+   * @param {Object} newConfig - New configuration values
    */
-  function calculate(params) {
-    // Apply defaults
-    const p = Object.assign({
-      operatingDays:      26,
-      shiftHours:         9,
-      benefitsRate:       0.28,
-      errorRate:          0.05,
-      errorCostPerSort:   4.50,
-      pricingModel:       'rental',
-      purchasePrice:      CONSTANTS.PURCHASE_DEFAULT
-    }, params);
+  updateConfig(newConfig) {
+    this.config = { ...this.config, ...newConfig };
+  }
 
-    validate(p);
+  /**
+   * Reset to default configuration
+   */
+  resetConfig() {
+    this.config = { ...this.defaultConfig };
+  }
 
-    const monthlyVolume = p.dailyVolume * p.operatingDays;
+  /**
+   * Calculate daily revenue
+   * @param {number} routesPerDay - Number of routes per day
+   * @returns {number} Daily revenue
+   */
+  calculateDailyRevenue(routesPerDay) {
+    const parcelsPerDay = routesPerDay * this.config.parcelsPerRoute;
+    const baseRevenue = parcelsPerDay * this.config.baseRatePerParcel;
+    const fuelSurcharge = baseRevenue * (this.config.fuelSurchargePercent / 100);
+    const insuranceFee = parcelsPerDay * this.config.insuranceFeePerParcel;
+    
+    return baseRevenue + fuelSurcharge + insuranceFee;
+  }
 
-    // ── Manual costs ──
-    const manualLaborCost = p.currentStaff
-      * p.hourlyWage
-      * (1 + p.benefitsRate)
-      * p.shiftHours
-      * p.operatingDays;
+  /**
+   * Calculate daily operating costs (without sorting automation)
+   * @param {number} routesPerDay - Number of routes per day
+   * @param {number} driversNeeded - Number of drivers needed
+   * @returns {number} Daily operating costs
+   */
+  calculateDailyOperatingCosts(routesPerDay, driversNeeded) {
+    const laborCost = driversNeeded * this.config.driverHourlyRate * this.config.driverHoursPerDay;
+    const vehicleCost = routesPerDay * this.config.vehicleCostPerDay;
+    const insuranceCost = routesPerDay * this.config.insuranceCostPerDay;
+    
+    return laborCost + vehicleCost + insuranceCost;
+  }
 
-    const manualErrorCost = monthlyVolume * p.errorRate * p.errorCostPerSort;
-    const manualTotal     = manualLaborCost + manualErrorCost;
-    const manualCPP       = monthlyVolume > 0 ? manualTotal / monthlyVolume : 0;
-
-    // ── Automated costs (SortLease FlowSort S15) ──
-    const slOperatorCost = CONSTANTS.AI_OPERATORS
-      * CONSTANTS.SKILLED_WAGE
-      * (1 + CONSTANTS.SKILLED_BENEFITS)
-      * p.shiftHours
-      * p.operatingDays;
-
-    const slEquipCost   = getEquipmentCost(p.pricingModel, monthlyVolume, p.dailyVolume, p.purchasePrice);
-    const slErrorCost   = monthlyVolume * CONSTANTS.AI_ERROR_RATE * p.errorCostPerSort;
-    const slTotal       = slOperatorCost + slEquipCost + slErrorCost;
-    const slCPP         = monthlyVolume > 0 ? slTotal / monthlyVolume : 0;
-
-    // ── Savings ──
-    const monthlySavings = manualTotal - slTotal;
-    const annualSavings  = monthlySavings * 12;
-
-    // ── Payback period ──
-    let paybackMonths = null;
-    if (p.pricingModel === 'purchase' && monthlySavings > 0) {
-      paybackMonths = Math.ceil(p.purchasePrice / monthlySavings);
-    } else if (p.pricingModel === 'rental' && monthlySavings > 0) {
-      // Rental: nominal payback = 1 month (no capital to recover)
-      paybackMonths = 1;
-    } else if (p.pricingModel === 'ppp') {
-      // PPP: immediate positive ROI from day 1 if savings > 0
-      paybackMonths = monthlySavings > 0 ? 0 : null;
-    }
-
-    // ── Staff reduction ──
-    const staffReduction     = Math.max(0, p.currentStaff - CONSTANTS.AI_OPERATORS);
-    const minStaffNeeded     = requiredManualStaff(p.dailyVolume, p.shiftHours);
-    const breakEvenVolume    = getBreakEvenVolume(p.dailyVolume);
-    const rentalRecommended  = monthlyVolume > breakEvenVolume;
-
+  /**
+   * Calculate time savings from automated sorting
+   * @param {number} parcelsPerDay - Number of parcels per day
+   * @returns {Object} Time savings breakdown
+   */
+  calculateSortingTimeSavings(parcelsPerDay) {
+    const manualTotalSeconds = parcelsPerDay * this.config.manualSortTimeSeconds;
+    const automatedTotalSeconds = parcelsPerDay * this.config.automatedSortTimeSeconds;
+    const secondsSaved = manualTotalSeconds - automatedTotalSeconds;
+    const hoursSaved = secondsSaved / 3600;
+    
     return {
-      // Inputs (echoed for reference)
-      inputs: { ...p },
-
-      // Core results
-      manualMonthly:      Math.round(manualTotal),
-      automatedMonthly:   Math.round(slTotal),
-      monthlySavings:     Math.round(monthlySavings),
-      annualSavings:      Math.round(annualSavings),
-      paybackMonths:      paybackMonths,
-
-      // Per-parcel breakdown
-      manualCPP:          parseFloat(manualCPP.toFixed(3)),
-      automatedCPP:       parseFloat(slCPP.toFixed(3)),
-      cppSavings:         parseFloat((manualCPP - slCPP).toFixed(3)),
-      savingsPercent:     manualCPP > 0 ? Math.round((1 - slCPP / manualCPP) * 100) : 0,
-
-      // Cost components (manual)
-      manualLaborCost:    Math.round(manualLaborCost),
-      manualErrorCost:    Math.round(manualErrorCost),
-
-      // Cost components (automated)
-      slOperatorCost:     Math.round(slOperatorCost),
-      slEquipCost:        Math.round(slEquipCost),
-      slErrorCost:        Math.round(slErrorCost),
-
-      // Operational
-      staffReduction:      staffReduction,
-      minStaffNeeded:      minStaffNeeded,
-      monthlyVolume:       monthlyVolume,
-      pppRate:             getPPPRate(p.dailyVolume),
-      rentalRate:          getRentalRate(p.dailyVolume),
-
-      // Decision helpers
-      breakEvenVolume:    breakEvenVolume,
-      rentalRecommended:  rentalRecommended,
-      roiPositive:        monthlySavings > 0,
-
-      // Metadata
-      calculatedAt:       new Date().toISOString(),
-      version:            '1.2.0'
+      manualTimeHours: manualTotalSeconds / 3600,
+      automatedTimeHours: automatedTotalSeconds / 3600,
+      hoursSaved: hoursSaved,
+      percentReduction: ((manualTotalSeconds - automatedTotalSeconds) / manualTotalSeconds) * 100
     };
   }
 
   /**
-   * Batch calculate across multiple scenarios.
-   *
-   * @param {Object} baseParams - Base parameters
-   * @param {string} varyParam  - Parameter name to vary
-   * @param {Array}  values     - Array of values to test
-   * @returns {Array} Array of result objects with varied parameter
+   * Calculate daily cost with sorting automation
+   * @param {number} routesPerDay - Number of routes per day
+   * @param {number} driversNeeded - Number of drivers needed
+   * @returns {number} Daily cost with automation
    */
-  function batchCalculate(baseParams, varyParam, values) {
-    return values.map(val => {
-      const params = Object.assign({}, baseParams, { [varyParam]: val });
-      const result = calculate(params);
-      return { [varyParam]: val, ...result };
-    });
+  calculateDailyCostWithAutomation(routesPerDay, driversNeeded) {
+    const baseCosts = this.calculateDailyOperatingCosts(routesPerDay, driversNeeded);
+    const sorterCost = this.config.sorterCostPerDay;
+    const maintenanceCost = this.config.sorterMaintenancePerDay;
+    
+    return baseCosts + sorterCost + maintenanceCost;
   }
 
   /**
-   * Find the daily volume break-even between PPP and rental.
-   *
-   * @param {Object} baseParams - Base parameters (without pricingModel)
-   * @returns {Object} Break-even analysis
+   * Calculate full ROI analysis
+   * @param {number} routesPerDay - Number of routes per day
+   * @param {boolean} useAutomation - Whether to use sorting automation
+   * @returns {Object} Complete ROI analysis
    */
-  function findBreakEven(baseParams) {
-    const rentalResult = calculate({ ...baseParams, pricingModel: 'rental' });
-    const pppResult    = calculate({ ...baseParams, pricingModel: 'ppp' });
-
+  calculateROI(routesPerDay, useAutomation = true) {
+    const parcelsPerDay = routesPerDay * this.config.parcelsPerRoute;
+    const driversNeeded = Math.ceil(parcelsPerDay / 400); // Assuming 400 parcels per driver
+    
+    const dailyRevenue = this.calculateDailyRevenue(routesPerDay);
+    const dailyCost = useAutomation 
+      ? this.calculateDailyCostWithAutomation(routesPerDay, driversNeeded)
+      : this.calculateDailyOperatingCosts(routesPerDay, driversNeeded);
+    
+    const dailyProfit = dailyRevenue - dailyCost;
+    const monthlyProfit = dailyProfit * this.config.workingDaysPerMonth;
+    const annualProfit = monthlyProfit * 12;
+    
+    const timeSavings = this.calculateSortingTimeSavings(parcelsPerDay);
+    
+    // Calculate ROI percentage
+    const investmentCost = useAutomation 
+      ? (this.config.sorterCostPerDay + this.config.sorterMaintenancePerDay)
+      : 0;
+    const roiPercent = investmentCost > 0 
+      ? ((dailyProfit - (dailyRevenue - this.calculateDailyOperatingCosts(routesPerDay, driversNeeded))) / investmentCost) * 100
+      : 0;
+    
     return {
-      monthlyVolumeBreakEven: rentalResult.breakEvenVolume,
-      dailyVolumeBreakEven:   Math.ceil(rentalResult.breakEvenVolume / baseParams.operatingDays),
-      currentMonthlyVolume:   rentalResult.monthlyVolume,
-      rentalCheaper:          rentalResult.automatedMonthly < pppResult.automatedMonthly,
-      rentalMonthlyCost:      rentalResult.automatedMonthly,
-      pppMonthlyCost:         pppResult.automatedMonthly,
-      monthlyCostDifference:  Math.abs(rentalResult.automatedMonthly - pppResult.automatedMonthly)
+      input: {
+        routesPerDay,
+        parcelsPerDay,
+        driversNeeded,
+        useAutomation
+      },
+      revenue: {
+        daily: dailyRevenue,
+        monthly: dailyRevenue * this.config.workingDaysPerMonth,
+        annual: dailyRevenue * this.config.workingDaysPerMonth * 12
+      },
+      costs: {
+        daily: dailyCost,
+        monthly: dailyCost * this.config.workingDaysPerMonth,
+        annual: dailyCost * this.config.workingDaysPerMonth * 12,
+        breakdown: {
+          labor: driversNeeded * this.config.driverHourlyRate * this.config.driverHoursPerDay,
+          vehicles: routesPerDay * this.config.vehicleCostPerDay,
+          insurance: routesPerDay * this.config.insuranceCostPerDay,
+          sorter: useAutomation ? this.config.sorterCostPerDay : 0,
+          maintenance: useAutomation ? this.config.sorterMaintenancePerDay : 0
+        }
+      },
+      profit: {
+        daily: dailyProfit,
+        monthly: monthlyProfit,
+        annual: annualProfit
+      },
+      timeSavings: timeSavings,
+      roi: {
+        percent: roiPercent,
+        paybackPeriodDays: investmentCost > 0 && dailyProfit > 0 
+          ? (this.config.sorterCostPerDay * 30) / (dailyProfit - (dailyRevenue - this.calculateDailyOperatingCosts(routesPerDay, driversNeeded))) 
+          : null
+      },
+      margins: {
+        grossMarginPercent: (dailyProfit / dailyRevenue) * 100,
+        profitPerParcel: dailyProfit / parcelsPerDay,
+        profitPerRoute: dailyProfit / routesPerDay
+      }
     };
   }
 
-  // ── Public API ───────────────────────────────────────────────────────────
-  return {
-    calculate,
-    batchCalculate,
-    findBreakEven,
-    CONSTANTS,
-    getPPPRate,
-    getRentalRate,
-    version: '1.2.0'
-  };
+  /**
+   * Compare scenarios with and without automation
+   * @param {number} routesPerDay - Number of routes per day
+   * @returns {Object} Comparison analysis
+   */
+  compareScenarios(routesPerDay) {
+    const withoutAutomation = this.calculateROI(routesPerDay, false);
+    const withAutomation = this.calculateROI(routesPerDay, true);
+    
+    const profitDifference = withAutomation.profit.daily - withoutAutomation.profit.daily;
+    const roiImprovement = withAutomation.margins.grossMarginPercent - withoutAutomation.margins.grossMarginPercent;
+    
+    return {
+      withoutAutomation,
+      withAutomation,
+      impact: {
+        dailyProfitIncrease: profitDifference,
+        monthlyProfitIncrease: profitDifference * this.config.workingDaysPerMonth,
+        annualProfitIncrease: profitDifference * this.config.workingDaysPerMonth * 12,
+        marginImprovementPercent: roiImprovement,
+        timeSavedHoursPerDay: withAutomation.timeSavings.hoursSaved
+      }
+    };
+  }
+}
 
-})();
-
-// CommonJS export (Node.js / testing)
+// Export for Node.js and browser
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = DSPCalculator;
+  module.exports = DSPROICalculator;
+}
+
+if (typeof window !== 'undefined') {
+  window.DSPROICalculator = DSPROICalculator;
 }

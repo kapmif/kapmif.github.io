@@ -3,588 +3,472 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSP Parcel Sorting ROI Calculator — Free Tool for Amazon DSPs | SortLease</title>
-<meta name="description" content="Free open-source ROI calculator for Amazon DSPs and last-mile logistics operators. Enter your daily parcel volume, staff count, and wages — see exact monthly savings, payback period, and cost per parcel from AI sorting vs manual. Built by SortLease.">
-<meta name="keywords" content="parcel sorting ROI calculator, Amazon DSP ROI, DSP sorting cost calculator, sorting automation ROI, last mile sorting savings, manual vs automated sorting, parcel sorting payback period">
-<link rel="canonical" href="https://kapmif.github.io/">
-<meta name="robots" content="index, follow">
-
-<meta property="og:type"        content="website">
-<meta property="og:title"       content="DSP Parcel Sorting ROI Calculator — Free Open-Source Tool">
-<meta property="og:description" content="Enter your parcel volume and staff costs. See exact savings from AI sorting vs manual. Used by Amazon DSPs and 3PLs.">
-<meta property="og:url"         content="https://kapmif.github.io/">
-<meta property="og:site_name"   content="SortLease Open Source">
-<meta name="twitter:card"       content="summary_large_image">
-<meta name="twitter:title"      content="DSP Parcel Sorting ROI Calculator">
-<meta name="twitter:description" content="Free: calculate your savings from AI parcel sorting. $0.27 manual → $0.10 automated. Instant results.">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "SoftwareApplication",
-      "name": "DSP Parcel Sorting ROI Calculator",
-      "description": "Open-source ROI calculator for Amazon Delivery Service Partners and last-mile logistics operators. Compares manual sorting cost ($0.22–$0.30/parcel) against AI-automated sorting ($0.07–$0.10/parcel). Calculates monthly savings, annual ROI, payback period, and cost per parcel across three pricing models.",
-      "url": "https://kapmif.github.io/",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Any web browser",
-      "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "author": { "@type": "Organization", "name": "SortLease LLC", "url": "https://www.sortlease.com" },
-      "codeRepository": "https://github.com/kapmif/kapmif.github.io",
-      "license": "https://opensource.org/licenses/MIT",
-      "featureList": [
-        "Monthly labor cost savings calculation",
-        "Annual ROI projection",
-        "Payback period in months",
-        "Cost per parcel comparison (manual vs AI)",
-        "Three pricing model comparison: pay-per-parcel, rental, purchase",
-        "Real-time results as you adjust sliders",
-        "Detailed cost breakdown table"
-      ],
-      "keywords": "parcel sorting ROI, Amazon DSP calculator, last-mile automation, sorting cost comparison"
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How much does manual parcel sorting cost per package?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Manual parcel sorting costs $0.22–$0.30 per package fully-loaded, including direct wages ($18–$25/hr), benefits overhead (25–30%), training and turnover costs (40% annual turnover), and mis-sort error costs (5% error rate × $4–8 rerouting cost). Most operators underestimate by only counting direct wages, which understates true cost by 40–60%." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the ROI for automated parcel sorting?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Typical ROI: rental model payback 6–10 months for operations sorting 3,000–10,000 parcels/day. Purchase model payback 14–24 months. Pay-per-parcel has immediate positive ROI from day one — no capital to recover. Annual net savings for a 5,000/day DSP: $43,000–$72,000 on rental model." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the break-even between pay-per-parcel and monthly rental?",
-          "acceptedAnswer": { "@type": "Answer", "text": "At $0.10/parcel pay-per-parcel vs $3,000/month rental, the break-even is approximately 30,000 parcels per month (about 1,150/day). Above this volume, monthly rental is cheaper. Below this volume, pay-per-parcel has lower total cost. The calculator shows this recommendation automatically based on your inputs." }
-        }
-      ]
-    },
-    {
-      "@type": "WebPage",
-      "url": "https://kapmif.github.io/",
-      "name": "DSP Parcel Sorting ROI Calculator",
-      "datePublished": "2026-04-08",
-      "dateModified": "2026-04-08",
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": [".hero-headline", ".hero-sub", ".results-hero"] }
-    }
-  ]
-}
-</script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-
+<title>DSP Parcel Sorting ROI Calculator — SortLease</title>
 <style>
-/* ── Design: Clean SaaS tool — white + electric blue ── */
-:root {
-  --blue:     #2563EB;
-  --blue2:    #1D4ED8;
-  --blue-l:   #EFF6FF;
-  --blue-m:   #BFDBFE;
-  --green:    #16A34A;
-  --green-l:  #F0FDF4;
-  --red:      #DC2626;
-  --red-l:    #FEF2F2;
-  --amber:    #D97706;
-  --amber-l:  #FFFBEB;
-  --g50:  #F9FAFB; --g100: #F3F4F6; --g200: #E5E7EB;
-  --g300: #D1D5DB; --g400: #9CA3AF; --g500: #6B7280;
-  --g700: #374151; --g800: #1F2937; --g900: #111827;
-  --sans: 'Inter', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', monospace;
-  --r: 8px; --r2: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-m: 0 4px 16px rgba(0,0,0,.1);
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--sans); background: var(--g50); color: var(--g900); line-height: 1.6; -webkit-font-smoothing: antialiased; }
-a { color: inherit; text-decoration: none; }
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #21252f;
+    --border: rgba(255,255,255,0.1);
+    --text: #e8eaf0;
+    --muted: #8a93a8;
+    --accent: #7c6bf0;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
 
-/* ── Header ── */
-.header { background: #fff; border-bottom: 1px solid var(--g200); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 200; }
-.logo { font-weight: 700; font-size: 16px; color: var(--g900); display: flex; align-items: center; gap: 8px; }
-.logo-mark { background: var(--blue); color: #fff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.header-nav { display: flex; align-items: center; gap: 6px; }
-.header-nav a { font-size: 13px; color: var(--g500); padding: 6px 12px; border-radius: var(--r); transition: all .15s; font-weight: 500; }
-.header-nav a:hover { background: var(--g100); color: var(--g900); }
-.gh-link { display: flex; align-items: center; gap: 6px; background: var(--g900) !important; color: #fff !important; padding: 6px 14px !important; border-radius: var(--r) !important; font-size: 13px; font-weight: 600 !important; }
-.gh-link:hover { background: var(--g700) !important; }
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .logo { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .gh-link {
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .gh-link:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── Hero ── */
-.hero { background: #fff; border-bottom: 1px solid var(--g200); padding: 52px 24px 44px; text-align: center; }
-.hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-l); color: var(--blue); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-bottom: 18px; letter-spacing: .03em; }
-.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--blue); border-radius: 50%; flex-shrink: 0; }
-h1.hero-headline { font-size: clamp(26px, 4.5vw, 42px); font-weight: 700; color: var(--g900); margin-bottom: 12px; letter-spacing: -.02em; line-height: 1.15; }
-h1.hero-headline em { color: var(--blue); font-style: normal; }
-p.hero-sub { font-size: 16px; color: var(--g500); max-width: 520px; margin: 0 auto 28px; line-height: 1.7; }
-.hero-metrics { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
-.hm { text-align: center; }
-.hm-val { font-family: var(--mono); font-size: 22px; font-weight: 700; line-height: 1; }
-.hm-val.red { color: var(--red); }
-.hm-val.green { color: var(--green); }
-.hm-val.blue { color: var(--blue); }
-.hm-lbl { font-size: 12px; color: var(--g400); margin-top: 3px; }
-.hm-div { width: 1px; background: var(--g200); align-self: stretch; display: none; }
-@media(min-width:480px){ .hm-div { display: block; } }
+  /* ── LAYOUT ── */
+  main { max-width: 1000px; margin: 0 auto; padding: 36px 20px; }
+  h1 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-/* ── Main layout ── */
-.main { max-width: 1060px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
 
-/* ── Cards ── */
-.card { background: #fff; border: 1px solid var(--g200); border-radius: var(--r2); padding: 22px; box-shadow: var(--shadow); }
-.card-title { font-size: 11px; font-weight: 700; color: var(--g400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 18px; }
+  /* ── INPUTS ── */
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 0.84rem; color: var(--muted); margin-bottom: 6px; }
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: var(--accent); }
 
-/* ── Section headings inside card ── */
-.sec-divider { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; margin: 20px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--g200); }
-.sec-divider:first-child { margin-top: 0; }
+  .hint { font-size: 0.76rem; color: var(--muted); margin-top: 4px; }
 
-/* ── Input fields ── */
-.field { margin-bottom: 14px; }
-.field-label { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: var(--g600, var(--g500)); letter-spacing: .03em; text-transform: uppercase; margin-bottom: 7px; }
-.field-val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--blue); letter-spacing: -.01em; text-transform: none; }
-input[type="range"] { width: 100%; accent-color: var(--blue); cursor: pointer; height: 18px; }
-.field-hint { font-size: 11px; color: var(--g400); margin-top: 3px; line-height: 1.5; }
+  /* ── BUTTON ── */
+  .calc-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .calc-btn:hover { background: #6a5ce0; transform: translateY(-1px); }
+  .calc-btn:active { transform: translateY(0); }
 
-/* ── Model selector ── */
-.model-btns { display: flex; gap: 5px; }
-.model-btn { flex: 1; font-size: 12px; font-weight: 600; padding: 8px 6px; border-radius: var(--r); border: 1.5px solid var(--g200); cursor: pointer; background: #fff; color: var(--g500); font-family: var(--sans); transition: all .15s; text-align: center; line-height: 1.3; }
-.model-btn:hover { border-color: var(--blue-m); color: var(--blue); }
-.model-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-.model-note { font-size: 11px; color: var(--g400); margin-top: 7px; line-height: 1.5; }
+  /* ── RESULTS ── */
+  .results { display: none; }
+  .results.show { display: block; }
 
-/* ── Results panel ── */
-.results-hero { background: var(--blue); color: #fff; border-radius: var(--r); padding: 16px; text-align: center; margin-bottom: 14px; }
-.rh-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; opacity: .7; margin-bottom: 4px; }
-.rh-val { font-family: var(--mono); font-size: 34px; font-weight: 700; line-height: 1; }
-.rh-sub { font-size: 11.5px; opacity: .7; margin-top: 4px; }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-label { color: var(--muted); }
+  .metric-value { font-weight: 600; color: var(--text); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-value.red { color: var(--red); }
 
-.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-.res-box { border-radius: var(--r); padding: 11px; text-align: center; background: var(--g50); border: 1px solid var(--g200); }
-.res-box.g { background: var(--green-l); border-color: #bbf7d0; }
-.res-box.r { background: var(--red-l); border-color: #fecaca; }
-.res-box.a { background: var(--amber-l); border-color: #fde68a; }
-.rb-lbl { font-size: 10px; font-weight: 600; color: var(--g400); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-.rb-val { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--g900); line-height: 1; }
-.rb-val.green { color: var(--green); }
-.rb-val.red { color: var(--red); }
-.rb-val.blue { color: var(--blue); }
+  /* ── VERDICT ── */
+  .verdict {
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 20px;
+    border: 1px solid;
+  }
+  .verdict.good { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.3); }
+  .verdict.bad { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+  .verdict-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .verdict.good .verdict-title { color: var(--green); }
+  .verdict.bad .verdict-title { color: var(--red); }
+  .verdict p { font-size: 0.88rem; color: var(--muted); }
 
-/* ── Payback bars ── */
-.payback-section { border-top: 1px solid var(--g200); padding-top: 12px; margin-bottom: 14px; }
-.pb-title { font-size: 10px; font-weight: 700; color: var(--g400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 9px; }
-.pb-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
-.pb-lbl { font-size: 11px; color: var(--g500); width: 96px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pb-track { flex: 1; height: 6px; background: var(--g200); border-radius: 3px; overflow: hidden; }
-.pb-bar { height: 6px; border-radius: 3px; transition: width .4s ease; }
-.pb-val { font-size: 11px; font-weight: 600; color: var(--g700); min-width: 38px; text-align: right; font-family: var(--mono); }
+  /* ── METRIC CARDS ── */
+  .metric-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .mc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .mc-number {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .mc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 
-/* ── Cost breakdown table ── */
-.breakdown { border-top: 1px solid var(--g200); padding-top: 12px; margin-bottom: 14px; }
-.bd-title { font-size: 10px; font-weight: 700; color: var(--g400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 9px; }
-.bd-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 4px 0; border-bottom: 1px solid var(--g100); color: var(--g600, var(--g500)); }
-.bd-row:last-child { border-bottom: none; font-weight: 700; color: var(--g900); font-size: 13px; padding-top: 8px; }
-.bd-nums { display: flex; gap: 8px; align-items: center; font-family: var(--mono); font-size: 12px; }
-.bd-arrow { color: var(--g300); font-size: 10px; }
-.bd-r { color: var(--red); }
-.bd-g { color: var(--green); }
+  /* ── FOOTER ── */
+  .footer-cta {
+    margin-top: 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-cta p { font-size: 0.9rem; color: var(--muted); }
+  .footer-cta strong { color: var(--text); }
+  .cta-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-link {
+    font-size: 0.84rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .cta-link.primary { background: var(--accent); color: #fff; }
+  .cta-link.primary:hover { background: #6a5ce0; }
+  .cta-link.secondary { border: 1px solid var(--border); color: var(--muted); }
+  .cta-link.secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── Switch recommendation ── */
-.switch-note { background: var(--amber-l); border: 1px solid #fde68a; border-radius: var(--r); padding: 9px 12px; font-size: 12px; color: #92400e; line-height: 1.55; margin-bottom: 12px; }
-.switch-note strong { display: block; margin-bottom: 2px; font-size: 12.5px; }
+  /* ── BREAKEVEN CHART ── */
+  #chart-wrap { margin-top: 20px; }
+  #chart-wrap canvas { width: 100% !important; }
 
-/* ── CTAs ── */
-.cta-stack { display: flex; flex-direction: column; gap: 7px; }
-.cta-primary { display: block; text-align: center; background: var(--blue); color: #fff; padding: 11px; border-radius: var(--r); font-size: 14px; font-weight: 600; transition: background .15s; }
-.cta-primary:hover { background: var(--blue2); }
-.cta-wa { display: flex; align-items: center; justify-content: center; gap: 7px; background: #25D366; color: #fff; padding: 10px; border-radius: var(--r); font-size: 13px; font-weight: 500; }
-.cta-wa:hover { background: #16a34a; }
-.cta-ghost { display: block; text-align: center; border: 1px solid var(--g200); color: var(--g500); padding: 9px; border-radius: var(--r); font-size: 12.5px; transition: all .15s; }
-.cta-ghost:hover { border-color: var(--blue-m); color: var(--blue); }
-.disclaimer { font-size: 10.5px; color: var(--g400); text-align: center; margin-top: 8px; line-height: 1.5; }
-
-/* ── Below-fold explainer ── */
-.explainer { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-.exp-card { background: #fff; border: 1px solid var(--g200); border-radius: var(--r2); padding: 20px; }
-.exp-icon { font-size: 22px; margin-bottom: 10px; }
-.exp-title { font-size: 14px; font-weight: 600; color: var(--g900); margin-bottom: 6px; }
-.exp-desc { font-size: 13px; color: var(--g500); line-height: 1.65; }
-.exp-data { margin-top: 10px; background: var(--g50); border-radius: 6px; padding: 10px 12px; }
-.exp-row { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; }
-.exp-row span:first-child { color: var(--g500); }
-.exp-row span:last-child { font-family: var(--mono); font-weight: 600; color: var(--g900); }
-
-/* ── Footer ── */
-footer { border-top: 1px solid var(--g200); background: #fff; padding: 20px 24px; text-align: center; font-size: 12px; color: var(--g400); }
-footer a { color: var(--blue); }
-footer .foot-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
-
-/* ── Responsive ── */
-@media (max-width: 780px) {
-  .main { grid-template-columns: 1fr; }
-  .header-nav a:not(.gh-link) { display: none; }
-}
-@media (max-width: 480px) {
-  .hero { padding: 32px 20px 28px; }
-  .hero-metrics { gap: 16px; }
-  .model-btns { flex-direction: column; }
-}
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .metric-cards { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
-<header class="header" role="banner">
-  <div class="logo">
-    <div class="logo-mark">S</div>
-    DSP ROI Calculator
-  </div>
-  <nav class="header-nav" aria-label="Site navigation">
-    <a href="https://www.sortlease.com/manual-vs-automated-parcel-sorting/" target="_blank" rel="noopener">Data &amp; benchmarks</a>
-    <a href="https://www.sortlease.com/pay-per-parcel/" target="_blank" rel="noopener">$0.10/parcel model</a>
-    <a href="https://github.com/kapmif/kapmif.github.io" target="_blank" rel="noopener" class="gh-link">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-      View on GitHub
-    </a>
-  </nav>
+<header>
+  <div class="logo">📦 DSP ROI Calculator <span>by SortLease</span></div>
+  <a href="https://github.com/kapmif/dsp-roi-calculator" target="_blank" rel="noopener" class="gh-link">
+    ⭐ View on GitHub
+  </a>
 </header>
 
-<!-- ── HERO ── -->
-<section class="hero" aria-labelledby="h1">
-  <div class="hero-eyebrow">Free open-source tool · 2026</div>
-  <h1 class="hero-headline" id="h1">
-    Parcel Sorting <em>ROI Calculator</em><br>for Amazon DSPs
-  </h1>
-  <p class="hero-sub">Enter your daily volume, staff count, and wages — see exact monthly savings, payback period, and cost per parcel from AI sorting vs manual. Results update instantly.</p>
-  <div class="hero-metrics" aria-label="Key benchmarks">
-    <div class="hm"><div class="hm-val red">$0.27</div><div class="hm-lbl">Manual cost / parcel</div></div>
-    <div class="hm-div"></div>
-    <div class="hm"><div class="hm-val green">$0.10</div><div class="hm-lbl">AI sorting cost / parcel</div></div>
-    <div class="hm-div"></div>
-    <div class="hm"><div class="hm-val blue">6×</div><div class="hm-lbl">Throughput advantage</div></div>
-    <div class="hm-div"></div>
-    <div class="hm"><div class="hm-val blue">99.9%</div><div class="hm-lbl">AI accuracy vs 95% manual</div></div>
-  </div>
-</section>
+<main>
+  <h1>Parcel Sorting ROI Calculator</h1>
+  <p class="subtitle">
+    Model the exact economics of switching from manual sorting to pay-per-parcel automation
+    at $0.10/parcel. Based on real SortLease deployment data.
+  </p>
 
-<!-- ── CALCULATOR ── -->
-<main class="main" id="calculator" aria-label="ROI calculator">
+  <div class="grid">
 
-  <!-- Inputs -->
-  <div class="card" aria-label="Calculator inputs">
-    <div class="card-title">Your operation — adjust sliders to match</div>
-
-    <div class="sec-divider">Volume &amp; schedule</div>
-
-    <div class="field">
-      <div class="field-label">Daily parcel volume <span class="field-val" id="v-vol">5,000</span></div>
-      <input type="range" id="r-vol" min="500" max="30000" step="500" value="5000" oninput="calc()" aria-label="Daily parcel volume">
-      <div class="field-hint">Average packages sorted per operating day (all shifts)</div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Operating days / month <span class="field-val" id="v-days">26</span></div>
-      <input type="range" id="r-days" min="20" max="31" step="1" value="26" oninput="calc()" aria-label="Operating days per month">
-    </div>
-
-    <div class="sec-divider">Current labor costs</div>
-
-    <div class="field">
-      <div class="field-label">Sorting staff (headcount) <span class="field-val" id="v-staff">6</span></div>
-      <input type="range" id="r-staff" min="1" max="40" step="1" value="6" oninput="calc()" aria-label="Current sorting staff headcount">
-      <div class="field-hint">Total employees dedicated to sorting across all shifts</div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Average hourly wage <span class="field-val" id="v-wage">$22</span></div>
-      <input type="range" id="r-wage" min="15" max="40" step="1" value="22" oninput="calc()" aria-label="Average hourly wage">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Shift length <span class="field-val" id="v-shift">9 hrs</span></div>
-      <input type="range" id="r-shift" min="6" max="12" step="1" value="9" oninput="calc()" aria-label="Shift length in hours">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Benefits &amp; overhead rate <span class="field-val" id="v-ben">28%</span></div>
-      <input type="range" id="r-ben" min="15" max="50" step="1" value="28" oninput="calc()" aria-label="Benefits and overhead rate">
-      <div class="field-hint">Payroll taxes, health insurance, 401K on top of base wages</div>
-    </div>
-
-    <div class="sec-divider">Error costs</div>
-
-    <div class="field">
-      <div class="field-label">Manual mis-sort rate <span class="field-val" id="v-err">5.0%</span></div>
-      <input type="range" id="r-err" min="1" max="15" step="0.5" value="5" oninput="calc()" aria-label="Manual mis-sort error rate">
-      <div class="field-hint">Industry average: 4–6% for manual sorting</div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Cost per mis-sort <span class="field-val" id="v-ecost">$4.50</span></div>
-      <input type="range" id="r-ecost" min="1" max="20" step="0.5" value="4.5" oninput="calc()" aria-label="Cost per mis-sort">
-      <div class="field-hint">Re-routing labor, customer service, carrier penalties per error</div>
-    </div>
-
-    <div class="sec-divider">SortLease pricing model</div>
-    <div class="model-btns" role="group" aria-label="Select pricing model">
-      <button class="model-btn active" onclick="setModel('ppp',this)">Pay-per-parcel<br><small>$0.10/pkg</small></button>
-      <button class="model-btn" onclick="setModel('rental',this)">Monthly rental<br><small>$3K/mo</small></button>
-      <button class="model-btn" onclick="setModel('purchase',this)">Purchase<br><small>$100K</small></button>
-    </div>
-    <div class="model-note" id="model-note">$0.10/parcel · no monthly fee · auto volume discounts at 3K/10K/25K per day · equipment + support included</div>
-  </div>
-
-  <!-- Results -->
-  <div aria-live="polite" aria-label="Calculation results">
+    <!-- INPUT CARD -->
     <div class="card">
-      <div class="card-title">Your ROI results</div>
+      <div class="card-title">Your Operation</div>
 
-      <div class="results-hero">
-        <div class="rh-label">Monthly net savings</div>
-        <div class="rh-val" id="r-savings">$0</div>
-        <div class="rh-sub" id="r-sub">—</div>
+      <div class="field">
+        <label for="volume">Daily Parcel Volume</label>
+        <input type="number" id="volume" value="15000" min="1000" max="100000">
+        <div class="hint">Parcels sorted per operating day</div>
       </div>
 
-      <div class="results-grid">
-        <div class="res-box g">
-          <div class="rb-lbl">Annual savings</div>
-          <div class="rb-val green" id="r-annual">$0</div>
-        </div>
-        <div class="res-box">
-          <div class="rb-lbl">ROI payback</div>
-          <div class="rb-val blue" id="r-payback">—</div>
-        </div>
-        <div class="res-box r">
-          <div class="rb-lbl">Your CPP today</div>
-          <div class="rb-val red" id="r-mcpp">—</div>
-        </div>
-        <div class="res-box g">
-          <div class="rb-lbl">SortLease CPP</div>
-          <div class="rb-val green" id="r-acpp">—</div>
-        </div>
+      <div class="field">
+        <label for="staff">Sorting Staff (headcount)</label>
+        <input type="number" id="staff" value="8" min="1" max="50">
       </div>
 
-      <!-- Payback bars -->
-      <div class="payback-section">
-        <div class="pb-title">Payback period comparison</div>
-        <div class="pb-row">
-          <span class="pb-lbl">Pay-per-parcel</span>
-          <div class="pb-track"><div class="pb-bar" id="pb-ppp" style="background:#16A34A;width:3%"></div></div>
-          <span class="pb-val" id="pbv-ppp">Day 1</span>
-        </div>
-        <div class="pb-row">
-          <span class="pb-lbl">Rental $3K/mo</span>
-          <div class="pb-track"><div class="pb-bar" id="pb-rent" style="background:#2563EB;width:0%"></div></div>
-          <span class="pb-val" id="pbv-rent">—</span>
-        </div>
-        <div class="pb-row">
-          <span class="pb-lbl">Purchase $100K</span>
-          <div class="pb-track"><div class="pb-bar" id="pb-purch" style="background:#D97706;width:0%"></div></div>
-          <span class="pb-val" id="pbv-purch">—</span>
-        </div>
+      <div class="field">
+        <label for="wage">Average Hourly Wage ($)</label>
+        <input type="number" id="wage" value="20" min="10" max="60" step="0.5">
+        <div class="hint">Include part-time workers</div>
       </div>
 
-      <!-- Switch recommendation -->
-      <div class="switch-note" id="switch-note" style="display:none"></div>
-
-      <!-- Cost breakdown -->
-      <div class="breakdown">
-        <div class="bd-title">Monthly cost breakdown</div>
-        <div id="bd-rows"></div>
+      <div class="field">
+        <label for="hours">Operating Hours / Day</label>
+        <input type="number" id="hours" value="8" min="4" max="24" step="0.5">
       </div>
 
-      <!-- CTAs -->
-      <div class="cta-stack">
-        <a href="https://www.sortlease.com/contact/?ref=github-calc" target="_blank" rel="noopener" class="cta-primary">
-          Get site-specific analysis from SortLease →
-        </a>
-        <a href="https://wa.me/14064790215?text=Hi%20SortLease%2C%20I%27ve%20used%20your%20open-source%20ROI%20calculator.%20Can%20we%20discuss%20my%20specific%20numbers%3F" target="_blank" rel="noopener" class="cta-wa">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.556 4.112 1.528 5.836L.046 23.954l6.266-1.457A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.896 0-3.67-.52-5.18-1.423l-.37-.22-3.822.889.925-3.715-.242-.382A9.957 9.957 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-          WhatsApp my results to SortLease
-        </a>
-        <a href="https://github.com/kapmif/kapmif.github.io" target="_blank" rel="noopener" class="cta-ghost">
-          ⭐ Star on GitHub · fork &amp; embed in your site
-        </a>
+      <div class="field">
+        <label for="error_rate">Mis-sort Error Rate (%)</label>
+        <input type="number" id="error_rate" value="3" min="0" max="15" step="0.5">
+        <div class="hint">Industry average: 3%. Enter 3 for 3%.</div>
       </div>
-      <div class="disclaimer">Estimates use industry-average benchmarks. Actual results vary. Free to use and share — MIT license.</div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate ROI →</button>
     </div>
+
+    <!-- RESULTS CARD -->
+    <div class="card">
+      <div class="card-title">ROI Analysis</div>
+
+      <!-- Default state -->
+      <div id="placeholder" style="color:var(--muted); font-size:0.92rem; padding:20px 0; text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">📊</div>
+        Enter your operation details and click Calculate.
+      </div>
+
+      <!-- Results state -->
+      <div id="results" class="results">
+
+        <div class="metric-cards" id="metric-cards"></div>
+
+        <div id="cost-breakdown">
+          <!-- populated by JS -->
+        </div>
+
+        <div id="verdict">
+          <!-- populated by JS -->
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
+  <!-- FOOTER CTA -->
+  <div class="footer-cta">
+    <div>
+      <p>
+        <strong>SortLease</strong> — First pay-per-parcel sorting network for US DSPs.
+        $5M seed round open · 83% gross margin · ~6-month payback per station.
+      </p>
+    </div>
+    <div class="cta-links">
+      <a href="https://www.sortlease.com/angel-investment/" target="_blank" rel="noopener" class="cta-link primary">
+        💜 Angel Investment →
+      </a>
+      <a href="https://www.sortlease.com/join-the-mission/" target="_blank" rel="noopener" class="cta-link secondary">
+        Join the Mission →
+      </a>
+      <a href="https://www.sortlease.com" target="_blank" rel="noopener" class="cta-link secondary">
+        sortlease.com →
+      </a>
+    </div>
+  </div>
 </main>
 
-<!-- ── EXPLAINER CARDS ── -->
-<section class="explainer" aria-label="How the calculation works">
-  <div class="exp-card">
-    <div class="exp-icon" aria-hidden="true" style="font-size:22px">💸</div>
-    <div class="exp-title">Why manual sorting costs $0.27/parcel</div>
-    <div class="exp-desc">Most operators only count direct wages — missing 40–60% of true cost. The real number includes benefits overhead, turnover training, and mis-sort error recovery.</div>
-    <div class="exp-data">
-      <div class="exp-row"><span>Direct wages</span><span>$0.14–0.19</span></div>
-      <div class="exp-row"><span>Benefits (28%)</span><span>$0.04–0.05</span></div>
-      <div class="exp-row"><span>Turnover cost</span><span>$0.01–0.02</span></div>
-      <div class="exp-row"><span>Error cost (5%)</span><span>$0.02–0.05</span></div>
-    </div>
-  </div>
-  <div class="exp-card">
-    <div class="exp-icon" aria-hidden="true" style="font-size:22px">🤖</div>
-    <div class="exp-title">What's included in the $0.10/parcel rate</div>
-    <div class="exp-desc">SortLease's pay-per-parcel rate is all-in: FlowSort S15 equipment (21,000/hr, 99.9% accuracy), installation, training, 24/7 support, and maintenance.</div>
-    <div class="exp-data">
-      <div class="exp-row"><span>Equipment</span><span>Included</span></div>
-      <div class="exp-row"><span>Installation</span><span>Included</span></div>
-      <div class="exp-row"><span>Support 24/7</span><span>Included</span></div>
-      <div class="exp-row"><span>Maintenance</span><span>Included</span></div>
-    </div>
-  </div>
-  <div class="exp-card">
-    <div class="exp-icon" aria-hidden="true" style="font-size:22px">📊</div>
-    <div class="exp-title">Which model is right for your volume?</div>
-    <div class="exp-desc">Pay-per-parcel is best for variable or seasonal volume. Monthly rental is cheaper above ~30,000 parcels/month. Purchase delivers maximum long-term ROI.</div>
-    <div class="exp-data">
-      <div class="exp-row"><span>Pay-per-parcel</span><span>&lt;30K/month</span></div>
-      <div class="exp-row"><span>Rental $3K/mo</span><span>30K–300K/mo</span></div>
-      <div class="exp-row"><span>Purchase $100K</span><span>High volume</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ── FOOTER ── -->
-<footer role="contentinfo">
-  <div class="foot-links">
-    <a href="https://www.sortlease.com" target="_blank" rel="noopener">SortLease.com</a>
-    <a href="https://www.sortlease.com/roi-calculator/" target="_blank" rel="noopener">Full ROI calculator</a>
-    <a href="https://www.sortlease.com/manual-vs-automated-parcel-sorting/" target="_blank" rel="noopener">Manual vs automated data</a>
-    <a href="https://www.sortlease.com/solutions/amazon-dsp-sorting/" target="_blank" rel="noopener">Amazon DSP guide</a>
-    <a href="https://www.sortlease.com/pay-per-parcel/" target="_blank" rel="noopener">Pay-per-parcel model</a>
-    <a href="https://github.com/kapmif/kapmif.github.io" target="_blank" rel="noopener">GitHub source</a>
-  </div>
-  <div>Open source · MIT license · Built by <a href="https://www.sortlease.com" target="_blank" rel="noopener">SortLease</a> · <a href="https://www.sortlease.com/contact/" target="_blank" rel="noopener">Contact</a></div>
-</footer>
-
-<script src="src/calculator.js"></script>
 <script>
-let currentModel = 'ppp';
+// ── constants ──
+const SORTLEASE_RATE    = 0.10;
+const STATION_INVEST    = 100_000;
+const OVERHEAD_MULT     = 1.25;
+const DAYS_PER_YEAR     = 310;
+const ERROR_COST        = 10.0;
 
-function setModel(m, btn) {
-  currentModel = m;
-  document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const notes = {
-    ppp:      '$0.10/parcel · no monthly fee · auto volume discounts at 3K/10K/25K per day · equipment + support included',
-    rental:   'From $3,000/month · unlimited parcels · equipment, installation + 24/7 support all included',
-    purchase: '$100,000 purchase · amortized 60 months · Section 179 tax deduction · 3-year warranty'
-  };
-  document.getElementById('model-note').textContent = notes[m];
-  calc();
-}
+function fmt$(n)   { return '$' + Math.round(n).toLocaleString(); }
+function fmtN(n)   { return Math.round(n).toLocaleString(); }
+function fmtD(n,d) { return n.toFixed(d); }
 
-function fmt(n)  { return '$' + Math.round(n).toLocaleString(); }
-function fmtf(n) { return '$' + parseFloat(n).toFixed(2); }
+function calculate() {
+  const volume     = +document.getElementById('volume').value;
+  const staff      = +document.getElementById('staff').value;
+  const wage       = +document.getElementById('wage').value;
+  const hours      = +document.getElementById('hours').value;
+  const errorRate  = +document.getElementById('error_rate').value / 100;
 
-function calc() {
-  const vol   = parseInt(document.getElementById('r-vol').value);
-  const days  = parseInt(document.getElementById('r-days').value);
-  const staff = parseInt(document.getElementById('r-staff').value);
-  const wage  = parseInt(document.getElementById('r-wage').value);
-  const shift = parseInt(document.getElementById('r-shift').value);
-  const ben   = parseInt(document.getElementById('r-ben').value) / 100;
-  const err   = parseFloat(document.getElementById('r-err').value) / 100;
-  const ecost = parseFloat(document.getElementById('r-ecost').value);
-
-  document.getElementById('v-vol').textContent   = vol.toLocaleString();
-  document.getElementById('v-days').textContent  = days;
-  document.getElementById('v-staff').textContent = staff;
-  document.getElementById('v-wage').textContent  = '$' + wage;
-  document.getElementById('v-shift').textContent = shift + ' hrs';
-  document.getElementById('v-ben').textContent   = Math.round(ben * 100) + '%';
-  document.getElementById('v-err').textContent   = (err * 100).toFixed(1) + '%';
-  document.getElementById('v-ecost').textContent = fmtf(ecost);
-
-  const params = {
-    dailyVolume: vol, operatingDays: days, currentStaff: staff,
-    hourlyWage: wage, shiftHours: shift, benefitsRate: ben,
-    errorRate: err, errorCostPerSort: ecost, pricingModel: currentModel
-  };
-
-  const r = DSPCalculator.calculate(params);
-  const rPPP  = DSPCalculator.calculate({ ...params, pricingModel: 'ppp' });
-  const rRent = DSPCalculator.calculate({ ...params, pricingModel: 'rental' });
-  const rPurch = DSPCalculator.calculate({ ...params, pricingModel: 'purchase' });
-
-  // Main results
-  document.getElementById('r-savings').textContent = fmt(r.monthlySavings);
-  document.getElementById('r-sub').textContent     = `vs ${fmt(r.manualMonthly)}/month manual cost`;
-  document.getElementById('r-annual').textContent  = fmt(r.annualSavings);
-  document.getElementById('r-mcpp').textContent    = fmtf(r.manualCPP);
-  document.getElementById('r-acpp').textContent    = fmtf(r.automatedCPP);
-
-  const paybackLabel = {
-    ppp: 'Day 1',
-    rental: '< 1 mo',
-    purchase: r.paybackMonths ? r.paybackMonths + ' mo' : '—'
-  };
-  document.getElementById('r-payback').textContent = paybackLabel[currentModel];
-
-  // Payback bars (max scale 30 months)
-  const maxScale = 30;
-  document.getElementById('pbv-ppp').textContent   = 'Day 1';
-  document.getElementById('pb-ppp').style.width    = '3%';
-  const rentPB = rRent.monthlySavings > 0 ? Math.round(3000 / rRent.monthlySavings) : 0;
-  document.getElementById('pbv-rent').textContent  = rRent.roiPositive ? rentPB + ' mo' : '—';
-  document.getElementById('pb-rent').style.width   = rRent.roiPositive ? Math.min(100, (rentPB / maxScale) * 100) + '%' : '0%';
-  const purchPB = rPurch.paybackMonths || 0;
-  document.getElementById('pbv-purch').textContent = rPurch.roiPositive && purchPB ? purchPB + ' mo' : '—';
-  document.getElementById('pb-purch').style.width  = rPurch.roiPositive && purchPB ? Math.min(100, (purchPB / maxScale) * 100) + '%' : '0%';
-
-  // Switch recommendation
-  const sw = document.getElementById('switch-note');
-  if (currentModel === 'ppp' && r.monthlyVolume > r.breakEvenVolume) {
-    const saving = fmt(rPPP.automatedMonthly - rRent.automatedMonthly);
-    sw.style.display = 'block';
-    sw.innerHTML = `<strong>💡 Rental may be cheaper at your volume</strong>Your ${r.monthlyVolume.toLocaleString()} parcels/month exceeds the PPP→rental break-even (~${r.breakEvenVolume.toLocaleString()}). Monthly rental would save ${saving}/month vs pay-per-parcel. <a href="https://www.sortlease.com/pay-per-parcel/" target="_blank" style="color:#92400e;text-decoration:underline">Compare models →</a>`;
-  } else {
-    sw.style.display = 'none';
+  if (!volume || !staff || !wage || !hours) {
+    alert('Please fill in all fields.');
+    return;
   }
 
-  // Breakdown
-  document.getElementById('bd-rows').innerHTML = `
-    <div class="bd-row">
-      <span>Labor cost</span>
-      <div class="bd-nums"><span class="bd-r">${fmt(r.manualLaborCost)}</span><span class="bd-arrow">→</span><span class="bd-g">${fmt(r.slOperatorCost)}</span></div>
+  // ── calculations ──
+  const dailyLabor   = staff * wage * hours * OVERHEAD_MULT;
+  const dailyErrors  = volume * errorRate * ERROR_COST;
+  const totalManual  = dailyLabor + dailyErrors;
+  const annualManual = totalManual * DAYS_PER_YEAR;
+
+  const dailySL   = volume * SORTLEASE_RATE;
+  const annualSL  = dailySL * DAYS_PER_YEAR;
+
+  const dailySave   = totalManual - dailySL;
+  const monthlySave = dailySave * 30;
+  const annualSave  = dailySave * DAYS_PER_YEAR;
+
+  let payback = null;
+  if (dailySave > 0) payback = STATION_INVEST / (dailySave * 30);
+
+  const fiveYearNet = (annualSave * 5) - STATION_INVEST;
+  const roi5yr      = dailySave > 0 ? fiveYearNet / STATION_INVEST * 100 : -100;
+
+  const variableSave = SORTLEASE_RATE - (errorRate * ERROR_COST);
+  const breakeven    = variableSave > 0 ? Math.ceil(dailyLabor / variableSave) : 9_999_999;
+  const beneficial   = dailySave > 0;
+
+  // ── render metric cards ──
+  const mc = document.getElementById('metric-cards');
+  mc.innerHTML = `
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial ? 'var(--green)' : 'var(--red)'}">
+        ${beneficial ? fmt$(dailySave) : '—'}
+      </div>
+      <div class="mc-label">Daily Savings</div>
     </div>
-    <div class="bd-row">
-      <span>Equipment cost</span>
-      <div class="bd-nums"><span>$0</span><span class="bd-arrow">→</span><span class="bd-r">${fmt(r.slEquipCost)}</span></div>
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial && payback < 12 ? 'var(--green)' : 'var(--amber)'}">
+        ${payback ? fmtD(payback,1) + ' mo' : '—'}
+      </div>
+      <div class="mc-label">Payback Period</div>
     </div>
-    <div class="bd-row">
-      <span>Error costs</span>
-      <div class="bd-nums"><span class="bd-r">${fmt(r.manualErrorCost)}</span><span class="bd-arrow">→</span><span class="bd-g">${fmt(r.slErrorCost)}</span></div>
+    <div class="mc">
+      <div class="mc-number" style="color:${beneficial ? 'var(--green)' : 'var(--red)'}">
+        ${beneficial ? fmt$(annualSave) : '—'}
+      </div>
+      <div class="mc-label">Annual Savings</div>
     </div>
-    <div class="bd-row">
-      <span>Total monthly</span>
-      <div class="bd-nums"><span class="bd-r">${fmt(r.manualMonthly)}</span><span class="bd-arrow">→</span><span class="bd-g">${fmt(r.automatedMonthly)}</span></div>
+    <div class="mc">
+      <div class="mc-number" style="color:var(--blue)">
+        ${fmtN(breakeven)}
+      </div>
+      <div class="mc-label">Break-even Volume</div>
     </div>
   `;
 
-  // GA4
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'calculator_interaction', { vol, model: currentModel });
+  // ── render cost breakdown ──
+  const cb = document.getElementById('cost-breakdown');
+  cb.innerHTML = `
+    <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);font-weight:700;margin-bottom:8px;">Cost Breakdown</div>
+
+    <div class="metric-row">
+      <span class="metric-label">Manual labor/day (w/ overhead)</span>
+      <span class="metric-value">${fmt$(dailyLabor)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Error correction/day</span>
+      <span class="metric-value">${fmt$(dailyErrors)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">Total manual cost/day</span>
+      <span class="metric-value">${fmt$(totalManual)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">SortLease cost/day ($0.10 × ${fmtN(volume)})</span>
+      <span class="metric-value">${fmt$(dailySL)}</span>
+    </div>
+    ${beneficial ? `
+    <div class="metric-row">
+      <span class="metric-label">Annual savings</span>
+      <span class="metric-value green">${fmt$(annualSave)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">5-year net benefit</span>
+      <span class="metric-value green">${fmt$(fiveYearNet)}</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-label">5-year ROI</span>
+      <span class="metric-value green">${Math.round(roi5yr)}%</span>
+    </div>
+    ` : `
+    <div class="metric-row">
+      <span class="metric-label">Shortfall at current volume</span>
+      <span class="metric-value red">${fmt$(Math.abs(dailySave))}/day</span>
+    </div>
+    `}
+  `;
+
+  // ── render verdict ──
+  const vd = document.getElementById('verdict');
+  if (beneficial) {
+    const pctAbove = ((volume - breakeven) / breakeven * 100).toFixed(0);
+    vd.innerHTML = `
+      <div class="verdict good">
+        <div class="verdict-title">✅ SortLease is cost-effective for your operation</div>
+        <p>You're ${pctAbove}% above the ${fmtN(breakeven)}/day break-even. Payback in ${fmtD(payback,1)} months.
+        Contact SortLease to discuss deployment at your facility.</p>
+      </div>
+    `;
+  } else {
+    vd.innerHTML = `
+      <div class="verdict bad">
+        <div class="verdict-title">⚠️ Not cost-effective at current volume</div>
+        <p>Break-even requires ${fmtN(breakeven)} parcels/day. You're processing ${fmtN(volume)}.
+        At ${fmtN(breakeven)}+ parcels/day, SortLease pays back in under 12 months.
+        Contact us to discuss future scaling plans.</p>
+      </div>
+    `;
   }
+
+  // ── show results ──
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('results').classList.add('show');
 }
 
-calc(); // init
-</script>
+// Auto-calculate on load with defaults
+window.addEventListener('load', () => calculate());
 
-<!-- GA4 — replace G-XXXXXXXXXX with your measurement ID -->
-<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+// Re-calculate on any input change
+['volume','staff','wage','hours','error_rate'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+});
+</script>
 
 </body>
 </html>
